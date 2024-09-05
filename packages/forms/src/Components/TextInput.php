@@ -4,6 +4,7 @@ namespace Filament\Forms\Components;
 
 use Closure;
 use Exception;
+use Filament\Forms\Components\Concerns\HasCharacterSubstitute;
 use Filament\Forms\Components\Contracts\CanHaveNumericState;
 use Filament\Support\Concerns\HasExtraAlpineAttributes;
 use Filament\Support\RawJs;
@@ -21,6 +22,7 @@ class TextInput extends Field implements CanHaveNumericState, Contracts\CanBeLen
     use Concerns\HasPlaceholder;
     use Concerns\HasStep;
     use HasExtraAlpineAttributes;
+    use HasCharacterSubstitute;
 
     /**
      * @var view-string
