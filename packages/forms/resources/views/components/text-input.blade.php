@@ -35,6 +35,23 @@
     } else {
         $type = $getType();
     }
+    $hasCharacterSubstitution = $hasCharacterSubstitution();
+    $sourceCharacters = $hasCharacterSubstitution ? json_encode($getSourceCharacters()) : '[]';
+    $destinationCharacters = $hasCharacterSubstitution ? json_encode($getDestinationCharacters()) : '[]';
+
+    if ($hasCharacterSubstitution) {
+        $xData = ($xData ? substr($xData, 0, -1) . ',' : '{') . "
+            substituteCharacters(value) {
+                const source = $sourceCharacters;
+                const destination = $destinationCharacters;
+
+                return value.split('').map(char => {
+                    const index = source.indexOf(char);
+                    return (index !== -1 && index < destination.length) ? destination[index] : char;
+                }).join('');
+            }
+        }";
+    }
 @endphp
 
 <x-dynamic-component
@@ -96,6 +113,10 @@
                         $applyStateBindingModifiers('wire:model') => $statePath,
                         'x-bind:type' => $isPasswordRevealable ? 'isPasswordRevealed ? \'text\' : \'password\'' : null,
                         'x-mask' . ($mask instanceof \Filament\Support\RawJs ? ':dynamic' : '') => filled($mask) ? $mask : null,
+                        'x-on:input' => $hasCharacterSubstitution ?
+                            '$event.target.value = substituteCharacters($event.target.value);' .
+                            $applyStateBindingModifiers('$event.target.value') :
+                            $applyStateBindingModifiers('$event.target.value'),
                     ], escape: false)
                     ->class([
                         '[&::-ms-reveal]:hidden' => $isPasswordRevealable,
